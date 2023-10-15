@@ -435,7 +435,7 @@ class ClusterVisualuzerGUI(object):
             print(f"[INFO] File: {self.file_in_path}")
 
         # test
-        self.file_in_path = "/home/lukas/file/sw/py/cluster_visualzer/devel/in/CListExt.clist"
+        # self.file_in_path = "./devel/in/data.clist"
 
         self.open_read_file()
 
