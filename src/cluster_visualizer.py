@@ -35,7 +35,7 @@ class ClusterVisualuzerGUI(object):
         ctk.set_appearance_mode(self.theme)
         ctk.set_default_color_theme("dark-blue")
 
-        root.geometry("1500x950")
+        root.geometry("1600x950")
 
         # configure grid layout (4x4)
         root.grid_columnconfigure((0, 1, 2), weight=0)
@@ -61,6 +61,7 @@ class ClusterVisualuzerGUI(object):
         self.file_clist = None
 
         self.cluster_count_max = 10000
+        self.clist_use_extension = False
 
         self.hist1d_log_x = False
         self.hist1d_log_y = False
@@ -290,6 +291,13 @@ class ClusterVisualuzerGUI(object):
         self.en_cluster_max.grid(row=row_shift_opt_file, column=1, sticky="e")  
         row_shift_opt_file += 1
 
+        self.lbl_clist_ext_var= ctk.CTkLabel(self.frame_opt_file, text="Switch tto include extension of clist:\t")
+        self.lbl_clist_ext_var.grid(row=row_shift_opt_file, column=0, sticky="w")         
+        self.swch_clist_ext_var = ctk.CTkSwitch(self.frame_opt_file, text="", state="enabled",
+                                                command=self.switch_to_clist_ext_var)
+        self.swch_clist_ext_var.grid(row=row_shift_opt_file, column=2, sticky="e")  
+        row_shift_opt_file += 1
+
         # self.lbl_cluster_idx_start = ctk.CTkLabel(self.frame_opt_file, text="Index of first cluster in clist:")
         # self.lbl_cluster_idx_start.grid(row=row_shift_opt_file, column=0, sticky="w")  
         # self.en_cluster_idx_start = ctk.CTkEntry(self.frame_opt_file, placeholder_text = f"0")
@@ -478,6 +486,9 @@ class ClusterVisualuzerGUI(object):
                 self.clist_ok.print()
                 print("===================================")
 
+                if self.clist_use_extension:
+                    self.clist_ok.extend_varaibles()
+
                 self.clist = self.clist_ok
 
                 self.clist_out = copy.deepcopy(self.clist_ok)
@@ -540,6 +551,10 @@ class ClusterVisualuzerGUI(object):
         self.hist1d_log_y = not self.hist1d_log_y
         self.show_hist1d("")
 
+    def switch_to_clist_ext_var(self):
+        self.clist_use_extension = not self.clist_use_extension
+        print(f"[INFO] Switched to {self.clist_use_extension} to use clist varaibles extension.")
+
     def switch_to_filetered_data(self):
         if self.clist_out is not None and not self.clist_out.data.empty:
             if self.show_clist_ok:
@@ -586,8 +601,8 @@ class ClusterVisualuzerGUI(object):
             self.cluster_par_list = self.cluster_params_as_text_list()
             self.cbox_cluster.configure(values=self.cluster_par_list)
             self.cbox_cluster.set(self.cluster_par_list[self.cluster_par_curr_idx])
-        except:
-            print("[ERROR] Failed to show cluster:\t", cluster_idx)
+        except Exception as e:
+            print(f"[ERROR] Failed to show cluster:\t{cluster_idx}: {e}.")
 
     def cluster_params_as_text_list(self):
         if self.clist is not None and not self.clist.data.empty:
